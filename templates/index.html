@@ -26,7 +26,7 @@
         }
 
         .sidebar {
-            width: 300px;
+            width: 350px;
             background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
             border-right: 1px solid #333;
             padding: 2rem;
@@ -375,6 +375,49 @@
             color: #ffd700;
         }
 
+        .help-badge {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .help-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        }
+
+        .help-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 0.5rem;
+            width: 350px;
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(15, 15, 15, 0.95) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .help-info:hover .help-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .app-container {
@@ -473,6 +516,12 @@
                         Refresh
                     </button>
                 </div>
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="testConnection()">
+                        <i class="fas fa-heart-pulse"></i>
+                        Test Connection
+                    </button>
+                </div>
 
                 <div id="addressDisplay" class="account-display" style="display: none;"></div>
             </div>
@@ -482,7 +531,41 @@
             <div class="header">
                 <h2>Now Playing</h2>
                 <p>Decentralized music streaming powered by <a href="https://cardona-zkevm.polygonscan.com/address/0x1a7dbe663e5efb9f3aaf2eb56616794069d3f4ea" target="_blank" class="header-link">Polygon zkEVM Smart Contract</a></p>
-                
+                <div class="help-info" style="position: absolute; top: 0; left: 0; cursor: pointer;">
+                    <div class="help-badge">
+                        <i class="fas fa-question-circle"></i>
+                        How it Works
+                    </div>
+                    
+                    <div class="help-dropdown">
+                        <div class="dropdown-section">
+                            <div class="dropdown-title">
+                                <i class="fas fa-coins"></i>
+                                Bidding System
+                            </div>
+                            <div style="color: #b3b3b3; font-size: 0.9rem; line-height: 1.5;">
+                                <p><strong>Higher bids = Higher priority!</strong></p>
+                                <p>• Submit your content URL with an ETH bid</p>
+                                <p>• The more you bid, the higher you rank in the queue</p>
+                                <p>• Queue automatically advances every 3 minutes</p>
+                                <p>• Your content plays when it reaches the top</p>
+                            </div>
+                        </div>
+                        
+                        <div class="dropdown-section">
+                            <div class="dropdown-title">
+                                <i class="fas fa-lightbulb"></i>
+                                Tips
+                            </div>
+                            <div style="color: #b3b3b3; font-size: 0.9rem; line-height: 1.5;">
+                                <p>• Use YouTube URLs for best experience</p>
+                                <p>• Bid in Wei (1 ETH = 10^18 Wei)</p>
+                                <p>• Check queue stats to see competition</p>
+                                <p>• Get testnet ETH from the <a href="https://faucet.triangleplatform.com/polygonzkevm/cardona" target="_blank" class="header-link">faucet <i class="fas fa-external-link-alt"></i></a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="queue-info" id="queueInfo">
                     <div class="queue-badge">
                         <i class="fas fa-list"></i>
@@ -797,6 +880,25 @@
                 }
             } catch (error) {
                 console.error('Error checking for updates:', error);
+            }
+        }
+        
+        async function testConnection() {
+            console.log('Testing connection...');
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                console.log('Health check result:', data);
+                
+                alert(`Connection Test:\n\nStatus: ${data.status}\nBlockchain: ${data.blockchain_connected ? 'Connected' : 'Disconnected'}\nContract: ${data.contract_address}`);
+                
+                // Also test the main endpoints
+                loadCurrentSong();
+                loadQueueMetadata();
+                
+            } catch (error) {
+                console.error('Connection test failed:', error);
+                alert(`Connection test failed: ${error.message}`);
             }
         }
         

@@ -116,6 +116,15 @@ print("Background refresh task started")
 async def root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
+@app.get("/health")
+async def health_check():
+    """Simple health check endpoint"""
+    return {
+        "status": "healthy",
+        "blockchain_connected": w3.is_connected(),
+        "contract_address": CONTRACT_ADDRESS
+    }
+
 @app.get("/current-url")
 async def get_current_url():
     try:

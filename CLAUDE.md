@@ -335,6 +335,29 @@ if __name__ == "__main__":
 
 ## Frontend Implementation (templates/index.html)
 
+### Real-time Update Architecture
+
+The frontend implements a sophisticated real-time update system that automatically refreshes the iframe when new content arrives:
+
+#### Update Detection System
+- **Polling Mechanism**: Checks `/current-url` endpoint every 5 seconds
+- **Change Detection**: Compares current URL with stored `currentPlayingUrl`
+- **Smart Updates**: Only refreshes iframe when content actually changes
+- **Dual Refresh**: Updates both player content and queue metadata simultaneously
+
+#### Update Flow
+1. `checkForUpdates()` polls backend every 5 seconds
+2. Detects URL changes by comparing with cached value
+3. Calls `loadCurrentSong()` to refresh iframe with new content
+4. Simultaneously updates queue metadata via `loadQueueMetadata()`
+5. Background service advances queue every 3 minutes via smart contract
+
+#### Performance Optimization
+- **Lightweight Polling**: Content check every 5 seconds (minimal payload)
+- **Metadata Refresh**: Queue data every 30 seconds (heavier payload)
+- **Change-Based Updates**: Only reloads iframe when URL actually changes
+- **Error Handling**: Graceful degradation on network/API failures
+
 ### HTML Structure
 ```html
 <!DOCTYPE html>
@@ -583,16 +606,25 @@ async function updatePrivateKey(privateKey) {
 }
 ```
 
-### Content Loading
+### Content Loading with Auto-Update
 ```javascript
 async function loadCurrentSong() {
+    /**
+     * Loads and displays current content in iframe player.
+     * 
+     * Features:
+     * - Automatically converts YouTube URLs to embed format with autoplay
+     * - Updates iframe src to trigger content refresh
+     * - Handles error states gracefully
+     * - Called by real-time update system when content changes
+     */
     try {
         const response = await fetch('/current-url');
         const data = await response.json();
         const container = document.getElementById('player-container');
         
         if (data.error) {
-            container.innerHTML = `<div class="status-message error">Error: ${data.error}</div>`;
+            container.innerHTML = `<div class="status-message error"><i class="fas fa-exclamation-triangle"></i><br>Error: ${data.error}</div>`;
             return;
         }
         
@@ -606,12 +638,14 @@ async function loadCurrentSong() {
                 const videoId = data.url.split('youtu.be/')[1].split('?')[0];
                 embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
             }
+            
+            // Update iframe - this triggers automatic content refresh
             container.innerHTML = `<iframe src="${embedUrl}" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
         } else {
-            container.innerHTML = `<div class="status-message no-content">No content currently playing</div>`;
+            container.innerHTML = `<div class="status-message no-content"><i class="fas fa-music"></i><br>No content currently playing</div>`;
         }
     } catch (error) {
-        container.innerHTML = `<div class="status-message error">Error: ${error.message}</div>`;
+        container.innerHTML = `<div class="status-message error"><i class="fas fa-wifi"></i><br>Error loading content: ${error.message}</div>`;
     }
 }
 ```
@@ -654,15 +688,41 @@ async function submitBid() {
 }
 ```
 
-### Auto-refresh System
+### Real-time Update System
 ```javascript
+// Store current URL to detect changes
+let currentPlayingUrl = null;
+
+async function checkForUpdates() {
+    try {
+        const response = await fetch('/current-url');
+        const data = await response.json();
+        
+        // Check if URL has changed
+        if (data.url !== currentPlayingUrl) {
+            console.log('Content changed, refreshing player');
+            currentPlayingUrl = data.url;
+            
+            // Refresh the player with new content
+            loadCurrentSong();
+            
+            // Also refresh queue metadata when content changes
+            loadQueueMetadata();
+        }
+    } catch (error) {
+        console.error('Error checking for updates:', error);
+    }
+}
+
 // Initialize on page load
 loadCurrentSong();
+loadQueueMetadata();
 
-// Auto-refresh every 60 seconds
-setInterval(() => {
-    loadCurrentSong();
-}, 60000);
+// Real-time content change detection every 5 seconds
+setInterval(checkForUpdates, 5000);
+
+// Refresh queue metadata every 30 seconds
+setInterval(loadQueueMetadata, 30000);
 ```
 
 ## Security Considerations
@@ -769,5 +829,13 @@ assert contract_instance.address == CONTRACT_ADDRESS
 ### Frontend Loading
 - **Issue**: Content not displaying
 - **Solution**: Check API endpoints, CORS settings, error handling
+
+### Real-time Updates
+- **Issue**: Iframe not updating with new content
+- **Solution**: Check `checkForUpdates()` polling, verify `/current-url` endpoint
+- **Issue**: Updates too slow/fast
+- **Solution**: Adjust polling intervals (5s for content, 30s for metadata)
+- **Issue**: Excessive API calls
+- **Solution**: Ensure change detection logic only updates when URL differs
 
 This context provides all essential patterns, security considerations, and implementation details needed to replicate the QueueChain project. Focus on the private key management system as it's critical for blockchain interactions and user security.

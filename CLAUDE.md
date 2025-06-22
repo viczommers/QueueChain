@@ -21,6 +21,8 @@ QueueChain/
 ├── contract.abi           # Smart contract ABI definition
 ├── templates/
 │   └── index.html         # Single-page application frontend
+├── static/
+│   └── style.css          # External CSS with glassmorphism design
 └── docs/
     └── CLAUDE_CONTEXT.md  # This file
 ```
@@ -424,6 +426,40 @@ The frontend implements a sophisticated real-time update system that automatical
                         <!-- Queue dropdown content -->
                     </div>
                 </div>
+                
+                <div class="help-info" style="position: absolute; top: 0; right: 0; cursor: pointer; margin-top: 50px;">
+                    <div class="help-badge">
+                        <i class="fas fa-question-circle"></i>
+                        How it Works
+                    </div>
+                    <div class="help-dropdown">
+                        <div class="dropdown-section">
+                            <div class="dropdown-title">
+                                <i class="fas fa-coins"></i>
+                                Bidding System
+                            </div>
+                            <div style="color: #b3b3b3; font-size: 0.9rem; line-height: 1.5;">
+                                <p><strong>Higher bids = Higher priority!</strong></p>
+                                <p>• Submit your content URL with an ETH bid</p>
+                                <p>• The more you bid, the higher you rank in the queue</p>
+                                <p>• Queue automatically advances every 30 minutes</p>
+                                <p>• Your content plays when it reaches the top</p>
+                            </div>
+                        </div>
+                        <div class="dropdown-section">
+                            <div class="dropdown-title">
+                                <i class="fas fa-lightbulb"></i>
+                                Tips
+                            </div>
+                            <div style="color: #b3b3b3; font-size: 0.9rem; line-height: 1.5;">
+                                <p>• Use YouTube URLs for best experience</p>
+                                <p>• Bid in Wei (1 ETH = 10^18 Wei)</p>
+                                <p>• Check queue stats to see competition</p>
+                                <p>• Get testnet ETH from the faucet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div class="player-container" id="player-container">
@@ -575,6 +611,85 @@ body {
     border: none;
     border-radius: 12px;
     min-height: 400px;
+}
+
+/* Queue and Help Dropdown System */
+.queue-badge {
+    background: linear-gradient(45deg, var(--spotify-green), var(--spotify-green-light));
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.help-badge {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.queue-dropdown, .help-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.5rem;
+    width: 350px;
+    background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(15, 15, 15, 0.95) 100%);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(20px);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.queue-info:hover .queue-dropdown,
+.help-info:hover .help-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Mobile responsive dropdowns */
+@media (max-width: 768px) {
+    .help-info, .queue-info {
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
+        left: auto !important;
+        margin: 1rem 0 !important;
+        display: block;
+        width: 100%;
+    }
+    
+    .help-dropdown, .queue-dropdown {
+        width: calc(100vw - 2rem) !important;
+        left: 50% !important;
+        transform: translateX(-50%) translateY(-10px) !important;
+        right: auto !important;
+        max-width: 400px;
+    }
+    
+    .help-info:hover .help-dropdown,
+    .queue-info:hover .queue-dropdown {
+        transform: translateX(-50%) translateY(0) !important;
+    }
 }
 ```
 

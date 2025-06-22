@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from web3 import Web3
 from web3.exceptions import ContractLogicError
@@ -75,7 +76,7 @@ def background_pop_task():
     """Background task that runs every 3 minutes"""
     while True:
         pop_if_ready()
-        time.sleep(1800)  # 3 minutes = 180 seconds
+        time.sleep(180)  # 3 minutes = 180 seconds
 
 def background_refresh_task():
     """Background task that refreshes current URL every 3.05 minutes"""
@@ -94,6 +95,9 @@ def background_refresh_task():
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
+
+# Mount static files FIRST
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Web3 setup
 w3 = Web3(Web3.HTTPProvider(RPC_URL))

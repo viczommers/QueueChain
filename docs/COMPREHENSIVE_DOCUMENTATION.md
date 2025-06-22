@@ -16,7 +16,7 @@
 
 ## Project Overview
 
-QueueChain is a decentralized music streaming platform that combines blockchain technology with modern web development. Users submit music content URLs with ETH bids, creating a priority queue where the highest bidders get their content played first. The system automatically advances the queue every 3 minutes through smart contract interactions.
+QueueChain is a decentralized music streaming platform that combines blockchain technology with modern web development. Users submit music content URLs with ETH bids, creating a priority queue where the highest bidders get their content played first. The system automatically advances the queue every 30 minutes through smart contract interactions.
 
 ### Core Technologies
 - **Backend**: FastAPI (Python 3.8+) with async/await patterns
@@ -41,6 +41,8 @@ QueueChain/
 ├── main.py                 # FastAPI application entry point
 ├── config.py              # Configuration constants (RPC URL, Contract Address)
 ├── contract.abi           # Smart contract ABI definition
+├── static/
+│   └── style.css          # External CSS styling with glassmorphism design
 ├── templates/
 │   └── index.html         # Single-page application frontend
 ├── docs/
@@ -71,7 +73,7 @@ python-multipart>=0.0.5
 - **Port**: 8000 (configurable in main.py:267)
 - **ASGI Server**: Uvicorn with reload disabled for production
 - **Template Directory**: ./templates/
-- **Static Files**: Embedded in HTML (CDN dependencies)
+- **Static Files**: ./static/ directory (mounted to /static/)
 
 ## FastAPI Application Structure
 
@@ -80,6 +82,7 @@ python-multipart>=0.0.5
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from web3 import Web3
 from web3.exceptions import ContractLogicError
@@ -92,6 +95,9 @@ from config import RPC_URL, CONTRACT_ADDRESS
 # FastAPI instance
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
+
+# Mount static files FIRST
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Global state variables
 current_private_key = None
@@ -744,7 +750,54 @@ print("Background refresh task started")
         <!-- Main content area -->
         <div class="main-content">
             <div class="header">
-                <!-- Header with queue info dropdown -->
+                <h2>Now Playing</h2>
+                <p>Decentralized music streaming powered by Polygon zkEVM Smart Contract</p>
+                
+                <!-- Queue info dropdown -->
+                <div class="queue-info" id="queueInfo">
+                    <div class="queue-badge">
+                        <i class="fas fa-list"></i>
+                        <span id="queueCount">0</span> in queue
+                    </div>
+                    <div class="queue-dropdown" id="queueDropdown">
+                        <!-- Comprehensive queue statistics and metadata -->
+                    </div>
+                </div>
+                
+                <!-- Help info dropdown -->
+                <div class="help-info" style="position: absolute; top: 0; right: 0; cursor: pointer; margin-top: 50px;">
+                    <div class="help-badge">
+                        <i class="fas fa-question-circle"></i>
+                        How it Works
+                    </div>
+                    <div class="help-dropdown">
+                        <div class="dropdown-section">
+                            <div class="dropdown-title">
+                                <i class="fas fa-coins"></i>
+                                Bidding System
+                            </div>
+                            <div style="color: #b3b3b3; font-size: 0.9rem; line-height: 1.5;">
+                                <p><strong>Higher bids = Higher priority!</strong></p>
+                                <p>• Submit your content URL with an ETH bid</p>
+                                <p>• The more you bid, the higher you rank in the queue</p>
+                                <p>• Queue automatically advances every 30 minutes</p>
+                                <p>• Your content plays when it reaches the top</p>
+                            </div>
+                        </div>
+                        <div class="dropdown-section">
+                            <div class="dropdown-title">
+                                <i class="fas fa-lightbulb"></i>
+                                Tips
+                            </div>
+                            <div style="color: #b3b3b3; font-size: 0.9rem; line-height: 1.5;">
+                                <p>• Use YouTube URLs for best experience</p>
+                                <p>• Bid in Wei (1 ETH = 10^18 Wei)</p>
+                                <p>• Check queue stats to see competition</p>
+                                <p>• Get testnet ETH from the faucet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div class="player-container" id="player-container">
@@ -830,10 +883,10 @@ async function loadCurrentSong() {
             let embedUrl = data.url;
             if (data.url.includes('youtube.com/watch?v=')) {
                 const videoId = data.url.split('v=')[1].split('&')[0];
-                embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
+                embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0`;
             } else if (data.url.includes('youtu.be/')) {
                 const videoId = data.url.split('youtu.be/')[1].split('?')[0];
-                embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
+                embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0`;
             }
             container.innerHTML = `<iframe src="${embedUrl}" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
         } else {
@@ -1486,6 +1539,52 @@ body {
     transform: translateY(0);
 }
 
+/* Help Badge */
+.help-badge {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+    color: white;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-pill);
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
+}
+
+.help-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+}
+
+/* Help Dropdown */
+.help-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: var(--spacing-sm);
+    width: 350px;
+    background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(15, 15, 15, 0.95) 100%);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: var(--glass-blur);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all var(--transition-base);
+    z-index: 1000;
+}
+
+.help-info:hover .help-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
 /* Dropdown Sections */
 .dropdown-section {
     margin-bottom: var(--spacing-lg);
@@ -1722,10 +1821,27 @@ body {
         justify-content: center;
     }
 
-    .queue-dropdown {
-        width: calc(100vw - 2rem);
-        right: -1rem;
-        left: -1rem;
+    .help-info, .queue-info {
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
+        left: auto !important;
+        margin: 1rem 0 !important;
+        display: block;
+        width: 100%;
+    }
+    
+    .help-dropdown, .queue-dropdown {
+        width: calc(100vw - 2rem) !important;
+        left: 50% !important;
+        transform: translateX(-50%) translateY(-10px) !important;
+        right: auto !important;
+        max-width: 400px;
+    }
+    
+    .help-info:hover .help-dropdown,
+    .queue-info:hover .queue-dropdown {
+        transform: translateX(-50%) translateY(0) !important;
     }
 
     .player-container {
@@ -1836,13 +1952,13 @@ import time
 def background_pop_task():
     while True:
         pop_if_ready()
-        time.sleep(180)  # 3 minutes
+        time.sleep(1800)  # 30 minutes
 
 # Service 2: Content monitoring  
 def background_refresh_task():
     while True:
         refresh_current_song()
-        time.sleep(183)  # 3.05 minutes
+        time.sleep(60)  # 1 minute
 
 # Initialize services
 pop_thread = threading.Thread(target=background_pop_task, daemon=True)

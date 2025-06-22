@@ -19,7 +19,7 @@ This fixes FIFO's deadweight loss in scarce resource allocation and better captu
 
 - **Decentralized Queue System**: Users bid with ETH to prioritize their content
 - **Automatic Progression**: Smart contract advances queue every 3 minutes
-- **YouTube Integration**: Automatic conversion of YouTube URLs to embedded players with autoplay
+- **YouTube Integration**: Automatic conversion of YouTube URLs to embedded players with autoplay (unmuted)
 - **Real-time Updates**: Live queue statistics and metadata display
 - **Responsive Design**: Spotify-inspired UI with glassmorphism effects
 - **Secure Wallet Integration**: In-memory private key management
@@ -42,6 +42,8 @@ QueueChain/
 ├── contract.abi           # Smart contract ABI definition
 ├── requirements.txt       # Python dependencies
 ├── startup.sh            # Deployment script
+├── static/
+│   └── style.css          # External CSS styling with glassmorphism design
 ├── templates/
 │   └── index.html         # Single-page application frontend
 ├── docs/
@@ -91,7 +93,7 @@ QueueChain/
 1. **Connect Wallet**: Enter your private key in the sidebar (stored in memory only)
 2. **Submit Content**: Add a music URL (YouTube supported) and bid amount in Wei
 3. **Watch Queue**: View live queue statistics and upcoming content
-4. **Enjoy**: Content plays automatically and advances every 3 minutes
+4. **Enjoy**: Content plays automatically with unmuted audio and advances every 30 minutes
 
 ## 🔧 Configuration
 
@@ -181,14 +183,16 @@ These files are specifically designed to enable AI agents to understand, replica
 - `getSubmissionByIndex(uint256)` - Get submission details by index
 
 ### Background Services
-- **Queue Advancement**: Automatically calls `popIfReady()` every 3 minutes (with empty queue check for efficiency)
-- **Content Monitoring**: Monitors current song every 3.05 minutes for logging
+- **Queue Advancement**: Automatically calls `popIfReady()` every 30 minutes (with empty queue check for efficiency)
+- **Content Monitoring**: Monitors current song every minute for logging
 
 ## 🎨 Frontend Features
 
 - **Responsive Design**: Mobile-first design that works on all devices
-- **Queue Dropdown**: Hover-triggered dropdown with live queue information
-- **YouTube Integration**: Automatic conversion of YouTube URLs to embedded players with autoplay
+- **Queue Dropdown**: Hover-triggered dropdown with live queue information (green badge)
+- **Help Dropdown**: Hover-triggered dropdown explaining bidding system and tips (red badge)
+- **Mobile Optimized Dropdowns**: Centered dropdowns with proper positioning on mobile devices
+- **YouTube Integration**: Automatic conversion of YouTube URLs to embedded players with autoplay (unmuted)
 - **Autoplay Support**: Media content starts automatically when queue advances
 - **Real-time Updates**: Auto-refresh every 60 seconds
 - **Status Messages**: Loading, error, and success states

@@ -17,7 +17,7 @@ This fixes FIFO's deadweight loss in scarce resource allocation and better captu
 
 - **Decentralized Queue System**: Users bid with ETH to prioritize their content
 - **Automatic Progression**: Smart contract advances queue every 3 minutes
-- **YouTube Integration**: Automatic conversion of YouTube URLs to embedded players
+- **YouTube Integration**: Automatic conversion of YouTube URLs to embedded players with autoplay
 - **Real-time Updates**: Live queue statistics and metadata display
 - **Responsive Design**: Spotify-inspired UI with glassmorphism effects
 - **Secure Wallet Integration**: In-memory private key management
@@ -186,7 +186,8 @@ These files are specifically designed to enable AI agents to understand, replica
 
 - **Responsive Design**: Mobile-first design that works on all devices
 - **Queue Dropdown**: Hover-triggered dropdown with live queue information
-- **YouTube Integration**: Automatic conversion of YouTube URLs to embedded players
+- **YouTube Integration**: Automatic conversion of YouTube URLs to embedded players with autoplay
+- **Autoplay Support**: Media content starts automatically when queue advances
 - **Real-time Updates**: Auto-refresh every 60 seconds
 - **Status Messages**: Loading, error, and success states
 - **Glassmorphism UI**: Modern glass-effect styling with smooth animations

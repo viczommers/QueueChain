@@ -586,13 +586,16 @@ async function loadCurrentSong() {
         }
         
         if (data.url) {
-            // Convert YouTube URLs to embed format
+            // Convert YouTube URLs to embed format with autoplay
             let embedUrl = data.url;
             if (data.url.includes('youtube.com/watch?v=')) {
                 const videoId = data.url.split('v=')[1].split('&')[0];
-                embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
+            } else if (data.url.includes('youtu.be/')) {
+                const videoId = data.url.split('youtu.be/')[1].split('?')[0];
+                embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
             }
-            container.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
+            container.innerHTML = `<iframe src="${embedUrl}" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
         } else {
             container.innerHTML = `<div class="status-message no-content">No content currently playing</div>`;
         }

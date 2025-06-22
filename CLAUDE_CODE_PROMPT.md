@@ -164,10 +164,11 @@ Implement Spotify-inspired design:
 - `submitBid()` - Submit new content bid with validation
 - `loadQueueMetadata()` - Update queue dropdown information
 
-**Content Handling**:
-- Convert YouTube URLs to embed format automatically
-- Handle iframe loading for video content
+**Content Handling with Autoplay**:
+- Convert YouTube URLs to embed format with autoplay and mute parameters
+- Handle iframe loading for video content with autoplay permissions
 - Show appropriate loading/error states
+- Enable autoplay for seamless jukebox experience
 
 **Auto-refresh System**:
 - Initialize content loading on page load
@@ -203,14 +204,20 @@ Implement Spotify-inspired design:
 
 ### 6. Specific Implementation Details
 
-#### YouTube URL Handling
-Convert YouTube URLs to embeddable format:
+#### YouTube URL Handling with Autoplay
+Convert YouTube URLs to embeddable format with autoplay enabled:
 ```javascript
 if (url.includes('youtube.com/watch?v=')) {
     const videoId = url.split('v=')[1].split('&')[0];
-    embedUrl = `https://www.youtube.com/embed/${videoId}`;
+    embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
+} else if (url.includes('youtu.be/')) {
+    const videoId = url.split('youtu.be/')[1].split('?')[0];
+    embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
 }
+container.innerHTML = `<iframe src="${embedUrl}" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
 ```
+
+**Important**: Videos must start muted (`mute=1`) due to browser autoplay policies. Users can unmute manually.
 
 #### Queue Dropdown Animation
 CSS hover animation:
@@ -264,7 +271,7 @@ After implementation, verify:
 - [ ] Queue metadata loads from smart contract
 - [ ] Bid submission creates transactions
 - [ ] Background services start automatically
-- [ ] YouTube URLs convert to embeds
+- [ ] YouTube URLs convert to embeds with autoplay
 - [ ] Responsive design works on mobile
 - [ ] Error handling prevents crashes
 
@@ -273,7 +280,7 @@ After implementation, verify:
 The application should be a fully functional decentralized music platform where:
 1. Users can connect their Ethereum wallets via private key
 2. Users can submit music content URLs with ETH bids
-3. Content is displayed in an embedded player
+3. Content is displayed in an embedded player with autoplay
 4. Queue automatically advances every 3 minutes
 5. Real-time queue information is displayed
 6. Modern, responsive UI provides excellent user experience

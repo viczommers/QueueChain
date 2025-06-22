@@ -93,7 +93,7 @@ QueueChain/
 1. **Connect Wallet**: Enter your private key in the sidebar (stored in memory only)
 2. **Submit Content**: Add a music URL (YouTube supported) and bid amount in Wei
 3. **Watch Queue**: View live queue statistics and upcoming content
-4. **Enjoy**: Content plays automatically with unmuted audio and advances every 30 minutes
+4. **Enjoy**: Content plays automatically with unmuted audio and advances every 3 minutes
 
 ## 🔧 Configuration
 
@@ -183,7 +183,7 @@ These files are specifically designed to enable AI agents to understand, replica
 - `getSubmissionByIndex(uint256)` - Get submission details by index
 
 ### Background Services
-- **Queue Advancement**: Automatically calls `popIfReady()` every 30 minutes (with empty queue check for efficiency)
+- **Queue Advancement**: Automatically calls `popIfReady()` every 3 minutes (with empty queue check for efficiency)
 - **Content Monitoring**: Monitors current song every minute for logging
 
 ## 🎨 Frontend Features

@@ -442,7 +442,7 @@ The frontend implements a sophisticated real-time update system that automatical
                                 <p><strong>Higher bids = Higher priority!</strong></p>
                                 <p>• Submit your content URL with an ETH bid</p>
                                 <p>• The more you bid, the higher you rank in the queue</p>
-                                <p>• Queue automatically advances every 30 minutes</p>
+                                <p>• Queue automatically advances every 3 minutes</p>
                                 <p>• Your content plays when it reaches the top</p>
                             </div>
                         </div>

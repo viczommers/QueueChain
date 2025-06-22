@@ -16,7 +16,7 @@
 
 ## Project Overview
 
-QueueChain is a decentralized music streaming platform that combines blockchain technology with modern web development. Users submit music content URLs with ETH bids, creating a priority queue where the highest bidders get their content played first. The system automatically advances the queue every 30 minutes through smart contract interactions.
+QueueChain is a decentralized music streaming platform that combines blockchain technology with modern web development. Users submit music content URLs with ETH bids, creating a priority queue where the highest bidders get their content played first. The system automatically advances the queue every 3 minutes through smart contract interactions.
 
 ### Core Technologies
 - **Backend**: FastAPI (Python 3.8+) with async/await patterns
@@ -683,42 +683,9 @@ def background_pop_task():
         time.sleep(180)  # 3 minutes = 180 seconds
 ```
 
-### Background Refresh Task
 ```python
-def background_refresh_task():
-    """
-    Background task that refreshes current URL every 3.05 minutes.
-    
-    Purpose:
-    - Monitor current song URL for changes
-    - Provide server-side logging of queue state
-    - Slightly offset from pop task to avoid conflicts
-    
-    Timing:
-    - 3.05 minutes (183 seconds) to offset from pop task
-    - Prevents simultaneous blockchain calls
-    """
-    while True:
-        try:
-            # Call the current-url endpoint internally
-            if w3.is_connected():
-                url = contract_instance.functions.getCurrentSong().call()[0]
-                print(f"Background refresh - Current URL: {url}")
-            else:
-                print("Background refresh - Blockchain connection failed")
-        except Exception as e:
-            print(f"Background refresh error: {e}")
-        
-        time.sleep(183)  # 3.05 minutes = 183 seconds
-
 # Thread initialization
-pop_thread = threading.Thread(target=background_pop_task, daemon=True)
-pop_thread.start()
-print("Background popIfReady task started")
 
-refresh_thread = threading.Thread(target=background_refresh_task, daemon=True)
-refresh_thread.start()
-print("Background refresh task started")
 ```
 
 ## Frontend Architecture
@@ -780,7 +747,7 @@ print("Background refresh task started")
                                 <p><strong>Higher bids = Higher priority!</strong></p>
                                 <p>• Submit your content URL with an ETH bid</p>
                                 <p>• The more you bid, the higher you rank in the queue</p>
-                                <p>• Queue automatically advances every 30 minutes</p>
+                                <p>• Queue automatically advances every 3 minutes</p>
                                 <p>• Your content plays when it reaches the top</p>
                             </div>
                         </div>
@@ -1952,20 +1919,11 @@ import time
 def background_pop_task():
     while True:
         pop_if_ready()
-        time.sleep(1800)  # 30 minutes
-
-# Service 2: Content monitoring  
-def background_refresh_task():
-    while True:
-        refresh_current_song()
-        time.sleep(60)  # 1 minute
+        time.sleep(180)  # 3 minutes
 
 # Initialize services
 pop_thread = threading.Thread(target=background_pop_task, daemon=True)
-refresh_thread = threading.Thread(target=background_refresh_task, daemon=True)
-
 pop_thread.start()
-refresh_thread.start()
 ```
 
 ### Service Monitoring

@@ -107,15 +107,11 @@ Implement secure private key handling:
 #### Background Services
 Implement two daemon threads:
 
-**Background Pop Task** (every 30 minutes):
+**Background Pop Task** (every 3 minutes):
 - Check if queue is empty before attempting pop (efficiency optimization)
 - Call `popIfReady()` smart contract function only if queue has items
 - Handle "3 minutes have not passed yet" errors gracefully
 - Use proper transaction signing pattern
-
-**Background Refresh Task** (every 3.05 minutes):
-- Monitor current song for logging
-- Offset timing to avoid conflicts
 
 #### Blockchain Transaction Pattern
 CRITICAL: Always use this pattern for blockchain writes:
@@ -274,7 +270,7 @@ Include help dropdown in the header section:
                 <p><strong>Higher bids = Higher priority!</strong></p>
                 <p>• Submit your content URL with an ETH bid</p>
                 <p>• The more you bid, the higher you rank in the queue</p>
-                <p>• Queue automatically advances every 30 minutes</p>
+                <p>• Queue automatically advances every 3 minutes</p>
                 <p>• Your content plays when it reaches the top</p>
             </div>
         </div>

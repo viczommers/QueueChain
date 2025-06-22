@@ -202,16 +202,9 @@ async def update_private_key(data: PrivateKeyUpdate):
 #### 1. Pop If Ready Task
 ```python
 def pop_if_ready():
-    # Triggers contract's popIfReady() every 30 minutes
+    # Triggers contract's popIfReady() every 3 minutes
     # Handles "3 minutes have not passed yet" error gracefully
     # Checks if queue is empty before attempting pop
-```
-
-#### 2. Background Refresh Task
-```python
-def background_refresh_task():
-    # Calls getCurrentSong() every minute
-    # Logs current URL for monitoring
 ```
 
 ## Frontend Styling Guide
@@ -498,7 +491,7 @@ except Exception as e:
                 <p><strong>Higher bids = Higher priority!</strong></p>
                 <p>• Submit your content URL with an ETH bid</p>
                 <p>• The more you bid, the higher you rank in the queue</p>
-                <p>• Queue automatically advances every 30 minutes</p>
+                <p>• Queue automatically advances every 3 minutes</p>
                 <p>• Your content plays when it reaches the top</p>
             </div>
         </div>

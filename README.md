@@ -21,7 +21,7 @@ This fixes FIFO's deadweight loss in scarce resource allocation and better captu
 - **Real-time Updates**: Live queue statistics and metadata display
 - **Responsive Design**: Spotify-inspired UI with glassmorphism effects
 - **Secure Wallet Integration**: In-memory private key management
-- **Background Services**: Automated queue management and content monitoring
+- **Background Services**: Automated queue management with efficiency optimizations and content monitoring
 
 ## 🛠 Technology Stack
 
@@ -179,7 +179,7 @@ These files are specifically designed to enable AI agents to understand, replica
 - `getSubmissionByIndex(uint256)` - Get submission details by index
 
 ### Background Services
-- **Queue Advancement**: Automatically calls `popIfReady()` every 3 minutes
+- **Queue Advancement**: Automatically calls `popIfReady()` every 3 minutes (with empty queue check for efficiency)
 - **Content Monitoring**: Monitors current song every 3.05 minutes for logging
 
 ## 🎨 Frontend Features

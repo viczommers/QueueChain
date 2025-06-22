@@ -105,7 +105,8 @@ Implement secure private key handling:
 Implement two daemon threads:
 
 **Background Pop Task** (every 3 minutes):
-- Call `popIfReady()` smart contract function
+- Check if queue is empty before attempting pop (efficiency optimization)
+- Call `popIfReady()` smart contract function only if queue has items
 - Handle "3 minutes have not passed yet" errors gracefully
 - Use proper transaction signing pattern
 
@@ -116,6 +117,13 @@ Implement two daemon threads:
 #### Blockchain Transaction Pattern
 CRITICAL: Always use this pattern for blockchain writes:
 ```python
+# For popIfReady - check queue first to avoid unnecessary transactions
+submission_count = contract_instance.functions.getSubmissionCount().call()
+if submission_count == 0:
+    print("Queue is empty - skipping popIfReady")
+    return
+
+# Standard transaction pattern for all blockchain writes
 transaction = contract_instance.functions.functionName(params).build_transaction({
     'from': account.address,
     'value': wei_amount,  # if payable

@@ -610,6 +610,11 @@ def pop_if_ready():
     """
     Triggers smart contract popIfReady function with comprehensive error handling.
     
+    Efficiency Optimization:
+    - Checks queue count before attempting transaction
+    - Skips pop attempt if queue is empty (saves gas)
+    - Continues with existing behavior if count check fails
+    
     Contract Logic:
     - Can only be called every 3 minutes (180 seconds)
     - Removes the top submission from queue
@@ -626,6 +631,16 @@ def pop_if_ready():
         if not account:
             print("No account available for popIfReady transaction")
             return
+        
+        # Check if queue is empty before attempting to pop
+        try:
+            submission_count = contract_instance.functions.getSubmissionCount().call()
+            if submission_count == 0:
+                print("Queue is empty - skipping popIfReady")
+                return
+        except Exception as e:
+            print(f"Error checking queue count: {e}")
+            # Continue with pop attempt if count check fails
         
         # Build transaction
         transaction = contract_instance.functions.popIfReady().build_transaction({

@@ -40,6 +40,16 @@ def pop_if_ready():
             print("No account available for popIfReady transaction")
             return
         
+        # Check if queue is empty before attempting to pop
+        try:
+            submission_count = contract_instance.functions.getSubmissionCount().call()
+            if submission_count == 0:
+                print("Queue is empty - skipping popIfReady")
+                return
+        except Exception as e:
+            print(f"Error checking queue count: {e}")
+            # Continue with pop attempt if count check fails
+        
         # Build transaction
         transaction = contract_instance.functions.popIfReady().build_transaction({
             'from': account.address,

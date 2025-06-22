@@ -416,6 +416,16 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #1ed760;
         }
+
+        .header-link {
+            color: #1db954;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .header-link:hover {
+            color: #1ed760;
+        }
     </style>
 </head>
 <body>
@@ -471,7 +481,7 @@
         <div class="main-content">
             <div class="header">
                 <h2>Now Playing</h2>
-                <p>Decentralized music streaming powered by blockchain</p>
+                <p>Decentralized music streaming powered by <a href="https://cardona-zkevm.polygonscan.com/address/0x1a7dbe663e5efb9f3aaf2eb56616794069d3f4ea" target="_blank" class="header-link">Polygon zkEVM Smart Contract</a></p>
                 
                 <div class="queue-info" id="queueInfo">
                     <div class="queue-badge">
@@ -776,5 +786,6 @@
             loadQueueMetadata();
         }, 60000);
     </script>
+
 </body>
 </html>

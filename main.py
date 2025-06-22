@@ -65,7 +65,7 @@ def background_pop_task():
     """Background task that runs every 3 minutes"""
     while True:
         pop_if_ready()
-        time.sleep(180)  # 3 minutes = 180 seconds
+        time.sleep(1800)  # 3 minutes = 180 seconds
 
 def background_refresh_task():
     """Background task that refreshes current URL every 3.05 minutes"""
@@ -80,7 +80,7 @@ def background_refresh_task():
         except Exception as e:
             print(f"Background refresh error: {e}")
         
-        time.sleep(183)  # 3.05 minutes = 183 seconds
+        time.sleep(1830)  # 3.05 minutes = 183 seconds
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")

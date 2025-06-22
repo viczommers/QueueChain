@@ -90,7 +90,7 @@ def background_refresh_task():
         except Exception as e:
             print(f"Background refresh error: {e}")
         
-        time.sleep(1830)  # 3.05 minutes = 183 seconds
+        time.sleep(60)  # 3.05 minutes = 183 seconds
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")

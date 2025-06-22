@@ -12,6 +12,8 @@ This fixes FIFO's deadweight loss in scarce resource allocation and better captu
 - **🎬 Video Demo**: [Watch on YouTube](https://youtu.be/Zn2tbIU-FBU)
 - **🌐 Live dApp**: [q-chain-fwb5aegndpdug7bu.uksouth-01.azurewebsites.net](http://q-chain-fwb5aegndpdug7bu.uksouth-01.azurewebsites.net)
 - **📄 Smart Contract**: [View on Polygon zkEVM Explorer](https://cardona-zkevm.polygonscan.com/address/0x1a7dbe663e5efb9f3aaf2eb56616794069d3f4ea)
+- **TestNet Tokens Faucet**: [Polygon zkEVM Cardona Faucet](https://faucet.triangleplatform.com/polygonzkevm/cardona)
+
 
 ## 🚀 Features
 

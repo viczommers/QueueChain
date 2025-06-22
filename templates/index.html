@@ -776,15 +776,43 @@
             loadQueueMetadata();
         }
         
+        // Store current URL to detect changes
+        let currentPlayingUrl = null;
+        
+        async function checkForUpdates() {
+            try {
+                const response = await fetch('/current-url');
+                const data = await response.json();
+                
+                // Check if URL has changed
+                if (data.url !== currentPlayingUrl) {
+                    console.log('Content changed, refreshing player');
+                    currentPlayingUrl = data.url;
+                    
+                    // Refresh the player with new content
+                    loadCurrentSong();
+                    
+                    // Also refresh queue metadata when content changes
+                    loadQueueMetadata();
+                }
+            } catch (error) {
+                console.error('Error checking for updates:', error);
+            }
+        }
+        
         // Load on page load
         loadCurrentSong();
         loadQueueMetadata();
         
-        // Auto-refresh every 60 seconds
+        // Check for content changes every 5 seconds
         setInterval(() => {
-            loadCurrentSong();
+            checkForUpdates();
+        }, 5000);
+        
+        // Refresh queue metadata every 30 seconds (lighter than full content check)
+        setInterval(() => {
             loadQueueMetadata();
-        }, 60000);
+        }, 30000);
     </script>
 
 </body>

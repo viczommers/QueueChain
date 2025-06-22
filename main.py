@@ -112,9 +112,9 @@ pop_thread = threading.Thread(target=background_pop_task, daemon=True)
 pop_thread.start()
 print("Background popIfReady task started")
 
-refresh_thread = threading.Thread(target=background_refresh_task, daemon=True)
-refresh_thread.start()
-print("Background refresh task started")
+# refresh_thread = threading.Thread(target=background_refresh_task, daemon=True)
+# refresh_thread.start()
+# print("Background refresh task started")
 
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):

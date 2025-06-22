@@ -78,20 +78,20 @@ def background_pop_task():
         pop_if_ready()
         time.sleep(180)  # 3 minutes = 180 seconds
 
-def background_refresh_task():
-    """Background task that refreshes current URL every 3.05 minutes"""
-    while True:
-        try:
-            # Call the current-url endpoint internally
-            if w3.is_connected():
-                url = contract_instance.functions.getCurrentSong().call()[0]
-                print(f"Background refresh - Current URL: {url}")
-            else:
-                print("Background refresh - Blockchain connection failed")
-        except Exception as e:
-            print(f"Background refresh error: {e}")
+# def background_refresh_task():
+#     """Background task that refreshes current URL every 60 seconds"""
+#     while True:
+#         try:
+#             # Call the current-url endpoint internally
+#             if w3.is_connected():
+#                 url = contract_instance.functions.getCurrentSong().call()[0]
+#                 print(f"Background refresh - Current URL: {url}")
+#             else:
+#                 print("Background refresh - Blockchain connection failed")
+#         except Exception as e:
+#             print(f"Background refresh error: {e}")
         
-        time.sleep(60)  # 3.05 minutes = 183 seconds
+#         time.sleep(60)
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")

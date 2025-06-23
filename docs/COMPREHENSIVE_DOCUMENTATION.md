@@ -697,7 +697,7 @@ def background_pop_task():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QueueChain - Decentralized Music Player</title>
+    <title>Queue Chain - Decentralized Music Player</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -706,7 +706,7 @@ def background_pop_task():
         <div class="sidebar">
             <div class="logo">
                 <i class="fas fa-music"></i>
-                <h1>QueueChain</h1>
+                <h1>Queue Chain</h1>
             </div>
             
             <div class="wallet-section">

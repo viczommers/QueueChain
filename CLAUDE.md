@@ -367,7 +367,7 @@ The frontend implements a sophisticated real-time update system that automatical
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Queue Chain - Decentralized Music Player</title>
+    <title>Encode Play - Decentralized Music Player</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         /* CSS implementation goes here */
@@ -378,7 +378,7 @@ The frontend implements a sophisticated real-time update system that automatical
         <div class="sidebar">
             <div class="logo">
                 <i class="fas fa-music"></i>
-                <h1>Queue Chain</h1>
+                <h1>Encode Play</h1>
             </div>
             
             <div class="wallet-section">

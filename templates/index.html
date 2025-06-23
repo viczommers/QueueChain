@@ -30,9 +30,9 @@
 
                 <div class="input-group">
                     <label for="bidUrl">
-                        <i class="fas fa-link"></i> Content URL
+                        <i class="fas fa-link"></i> Content URL (max 42 chars)
                     </label>
-                    <input type="text" id="bidUrl" placeholder="https://example.com/content">
+                    <input type="text" id="bidUrl" placeholder="https://youtu.be/content">
                 </div>
 
                 <div class="input-group">
@@ -304,7 +304,7 @@
                 // Update current playing section
                 if (data.current_playing) {
                     document.getElementById('currentSection').style.display = 'block';
-                    document.getElementById('currentTitle').textContent = extractContentTitle(data.current_playing.url);
+                    extractContentTitle(data.current_playing.url, document.getElementById('currentTitle'));
                     document.getElementById('currentSubmitter').textContent = `${data.current_playing.submitter.slice(0, 6)}...${data.current_playing.submitter.slice(-4)}`;
                     document.getElementById('currentTime').textContent = formatTimestamp(data.current_playing.timestamp);
                 } else {
@@ -314,7 +314,7 @@
                 // Update coming up next section
                 if (data.coming_up_next) {
                     document.getElementById('nextSection').style.display = 'block';
-                    document.getElementById('nextTitle').textContent = extractContentTitle(data.coming_up_next.url);
+                    extractContentTitle(data.coming_up_next.url, document.getElementById('nextTitle'));
                     document.getElementById('nextSubmitter').textContent = `${data.coming_up_next.submitter.slice(0, 6)}...${data.coming_up_next.submitter.slice(-4)}`;
                     document.getElementById('nextTime').textContent = formatTimestamp(data.coming_up_next.timestamp);
                 } else {
@@ -330,14 +330,24 @@
                     data.recent_submissions.slice(0, 3).forEach((item, index) => {
                         const itemDiv = document.createElement('div');
                         itemDiv.className = 'queue-item';
-                        itemDiv.innerHTML = `
-                            <div class="queue-item-title">#${index + 1} ${extractContentTitle(item.url)}</div>
-                            <div class="queue-item-meta">
-                                <span class="submitter">${item.submitter.slice(0, 6)}...${item.submitter.slice(-4)}</span>
-                                <span class="timestamp">${formatTimestamp(item.timestamp)}</span>
-                            </div>
+                        const titleDiv = document.createElement('div');
+                        titleDiv.className = 'queue-item-title';
+                        titleDiv.textContent = `#${index + 1} `;
+                        
+                        const metaDiv = document.createElement('div');
+                        metaDiv.className = 'queue-item-meta';
+                        metaDiv.innerHTML = `
+                            <span class="submitter">${item.submitter.slice(0, 6)}...${item.submitter.slice(-4)}</span>
+                            <span class="timestamp">${formatTimestamp(item.timestamp)}</span>
                         `;
+                        
+                        itemDiv.appendChild(titleDiv);
+                        itemDiv.appendChild(metaDiv);
                         recentContainer.appendChild(itemDiv);
+                        
+                        // Now fetch the title
+                        extractContentTitle(item.url, titleDiv);
+                        titleDiv.textContent = `#${index + 1} ${extractContentTitle(item.url)}`;
                     });
                 } else {
                     document.getElementById('recentSection').style.display = 'none';
@@ -348,11 +358,26 @@
             }
         }
         
-        function extractContentTitle(url) {
+        function extractContentTitle(url, element) {
             if (!url) return 'Unknown Content';
             
             // Extract title from YouTube URLs
             if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                // Set default immediately
+                if (element) element.textContent = 'YouTube Video';
+                
+                // Fetch real title in background
+                setTimeout(async () => {
+                    try {
+                        const response = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`);
+                        const data = await response.json();
+                        if (element) element.textContent = data.title || 'YouTube Video';
+                    } catch (error) {
+                        console.error('Error fetching YouTube title:', error);
+                        if (element) element.textContent = 'YouTube Video';
+                    }
+                }, 0);
+                
                 return 'YouTube Video';
             }
             

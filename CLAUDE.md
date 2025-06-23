@@ -393,7 +393,7 @@ The frontend implements a sophisticated real-time update system that automatical
                 </div>
                 
                 <div class="input-group">
-                    <label for="bidUrl">Content URL</label>
+                    <label for="bidUrl">Content URL (max 42 chars)</label>
                     <input type="text" id="bidUrl" placeholder="https://youtube.com/watch?v=...">
                 </div>
                 

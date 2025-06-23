@@ -10,7 +10,7 @@ Create a complete decentralized music streaming platform called **QueueChain** t
 - **Backend**: FastAPI (Python 3.8+) with async/await patterns
 - **Blockchain**: Web3.py for Ethereum smart contract interaction on Polygon zkEVM
 - **Frontend**: Single-page application with vanilla JavaScript and modern CSS
-- **Design**: Spotify-inspired dark theme with glassmorphism effects
+- **Design**: Glassmorphism dark theme with disco-inspired elements, electric blue accents, and shimmer animations
 - **Security**: In-memory private key management (never persist to disk)
 
 ### Smart Contract Integration
@@ -26,7 +26,7 @@ QueueChain/
 ├── config.py              # Configuration constants
 ├── contract.abi           # Smart contract ABI
 ├── static/
-│   └── style.css          # External CSS styling
+│   └── style.css          # External CSS styling with glassmorphism design, disco elements, and shimmer effects
 └── templates/
     └── index.html         # Frontend application
 ```

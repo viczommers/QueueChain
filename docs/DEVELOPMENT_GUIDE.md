@@ -12,9 +12,9 @@
 
 QueueChain is a decentralized music streaming application built with:
 - **Backend**: FastAPI with Web3.py for blockchain interaction
-- **Frontend**: Vanilla JavaScript with modern CSS (Spotify-inspired design)
+- **Frontend**: Vanilla JavaScript with modern CSS (glassmorphism design with disco elements)
 - **Blockchain**: Ethereum-compatible smart contract for queue management
-- **Styling**: CSS Grid/Flexbox with glassmorphism effects
+- **Styling**: CSS Grid/Flexbox with glassmorphism effects, disco-inspired elements, and shimmer animations
 
 ### Project Structure
 ```
@@ -23,7 +23,7 @@ QueueChain/
 ├── config.py              # Configuration constants
 ├── contract.abi           # Smart contract ABI
 ├── static/
-│   └── style.css          # External CSS styling
+│   └── style.css          # External CSS styling with glassmorphism design, disco elements, and shimmer effects
 ├── templates/
 │   └── index.html         # Frontend application
 └── docs/

@@ -32,44 +32,36 @@ body {
     margin-bottom: 3rem;
 }
 
-.logo i {
-    font-size: 2rem;
-    background: linear-gradient(45deg, #1db954, #1ed760);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-right: 0.5rem;
-}
-
 .logo h1 {
     font-size: 1.5rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 25%, #45b7d1 50%, #9b59b6 75%, #1db954 100%);
+    background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 25%, #45b7d1 50%, #00bfff 75%, #6a5acd 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     animation: rainbow-text 4s ease-in-out infinite;
-    text-shadow: 0 0 10px rgba(155, 89, 182, 0.3);
+    text-shadow: 0 0 10px rgba(0, 191, 255, 0.3);
 }
 
 @keyframes rainbow-text {
     0%, 100% { 
-        background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 25%, #45b7d1 50%, #9b59b6 75%, #1db954 100%);
+        background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 25%, #45b7d1 50%, #00bfff 75%, #6a5acd 100%);
         -webkit-background-clip: text;
         background-clip: text;
     }
     50% { 
-        background: linear-gradient(135deg, #1db954 0%, #9b59b6 25%, #45b7d1 50%, #4ecdc4 75%, #ff6b6b 100%);
+        background: linear-gradient(135deg, #6a5acd 0%, #00bfff 25%, #45b7d1 50%, #4ecdc4 75%, #ff6b6b 100%);
         -webkit-background-clip: text;
         background-clip: text;
     }
 }
 
 .logo-container {
-    background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 25%, #45b7d1 50%, #9b59b6 75%, #1db954 100%);
+    background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 25%, #45b7d1 50%, #00bfff 75%, #6a5acd 100%);
     padding: 0.75rem;
     border-radius: 12px;
     margin-right: 0.75rem;
-    box-shadow: 0 4px 15px rgba(155, 89, 182, 0.4), 0 0 20px rgba(69, 183, 209, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 191, 255, 0.4), 0 0 20px rgba(69, 183, 209, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     position: relative;
@@ -114,7 +106,7 @@ body {
     display: flex;
     align-items: center;
     margin-bottom: 1rem;
-    color: #1db954;
+    color: #00bfff;
     font-weight: 600;
 }
 
@@ -147,8 +139,8 @@ body {
 
 .input-group input:focus {
     outline: none;
-    border-color: #1db954;
-    box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.2);
+    border-color: #00bfff;
+    box-shadow: 0 0 0 2px rgba(0, 191, 255, 0.2);
 }
 
 .button-group {
@@ -177,13 +169,27 @@ body {
 }
 
 .btn-primary {
-    background: linear-gradient(45deg, #1db954, #1ed760);
+    background: linear-gradient(45deg, #2a7a4b, #3a8a5b);
     color: white;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(42, 122, 75, 0.3);
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), rgba(78, 205, 196, 0.1), rgba(69, 183, 209, 0.1), transparent);
+    animation: shimmer 4s infinite;
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(29, 185, 84, 0.3);
+    box-shadow: 0 8px 25px rgba(42, 122, 75, 0.4);
 }
 
 .btn-secondary {
@@ -200,11 +206,11 @@ body {
 .account-display {
     margin-top: 1rem;
     padding: 0.75rem;
-    background: rgba(29, 185, 84, 0.1);
+    background: rgba(0, 191, 255, 0.1);
     border-radius: 8px;
-    border: 1px solid rgba(29, 185, 84, 0.3);
+    border: 1px solid rgba(0, 191, 255, 0.3);
     font-size: 0.8rem;
-    color: #1ed760;
+    color: #1e90ff;
     word-break: break-all;
 }
 
@@ -241,7 +247,7 @@ body {
 }
 
 .queue-badge {
-    background: linear-gradient(45deg, #1db954, #1ed760);
+    background: linear-gradient(45deg, #6b4c93, #4682b4);
     color: white;
     padding: 0.5rem 1rem;
     border-radius: 20px;
@@ -251,11 +257,25 @@ body {
     align-items: center;
     gap: 0.5rem;
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(107, 76, 147, 0.3);
+}
+
+.queue-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), rgba(0, 191, 255, 0.1), rgba(69, 183, 209, 0.1), transparent);
+    animation: shimmer 4s infinite;
 }
 
 .queue-badge:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(29, 185, 84, 0.3);
+    box-shadow: 0 8px 25px rgba(107, 76, 147, 0.4);
 }
 
 .queue-dropdown {
@@ -292,7 +312,7 @@ body {
 }
 
 .dropdown-title {
-    color: #1db954;
+    color: #00bfff;
     font-weight: 600;
     margin-bottom: 0.75rem;
     display: flex;
@@ -332,10 +352,10 @@ body {
 
 .submitter {
     font-family: monospace;
-    background: rgba(29, 185, 84, 0.1);
+    background: rgba(0, 191, 255, 0.1);
     padding: 0.2rem 0.4rem;
     border-radius: 4px;
-    color: #1ed760;
+    color: #1e90ff;
 }
 
 .timestamp {
@@ -358,7 +378,7 @@ body {
 .stat-number {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #1db954;
+    color: #00bfff;
     margin-bottom: 0.25rem;
 }
 
@@ -418,7 +438,7 @@ body {
 }
 
 .success {
-    color: #1db954;
+    color: #00bfff;
 }
 
 .no-content {
@@ -426,7 +446,7 @@ body {
 }
 
 .help-badge {
-    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+    background: linear-gradient(45deg, #cd5c5c, #d2691e);
     color: white;
     padding: 0.5rem 1rem;
     border-radius: 20px;
@@ -436,11 +456,25 @@ body {
     align-items: center;
     gap: 0.5rem;
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(205, 92, 92, 0.3);
+}
+
+.help-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), rgba(255, 165, 0, 0.1), rgba(255, 140, 0, 0.1), transparent);
+    animation: shimmer 4s infinite;
 }
 
 .help-badge:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+    box-shadow: 0 8px 25px rgba(205, 92, 92, 0.4);
 }
 
 .help-dropdown {
@@ -525,20 +559,20 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #1db954;
+    background: #00bfff;
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #1ed760;
+    background: #1e90ff;
 }
 
 .header-link {
-    color: #1db954;
+    color: #00bfff;
     text-decoration: none;
     transition: all 0.3s ease;
 }
 
 .header-link:hover {
-    color: #1ed760;
+    color: #1e90ff;
 }

@@ -11,7 +11,7 @@ QueueChain is a decentralized music streaming platform built with FastAPI and We
 - **Blockchain**: Web3.py for Ethereum smart contract interaction
 - **Frontend**: Vanilla JavaScript with modern CSS3
 - **Network**: Polygon zkEVM testnet (Cardona)
-- **Design**: Spotify-inspired UI with glassmorphism effects
+- **Design**: Glassmorphism UI with disco-inspired elements, electric blue accents, and shimmer animations
 
 ### Project Structure
 ```
@@ -22,7 +22,7 @@ QueueChain/
 ├── templates/
 │   └── index.html         # Single-page application frontend
 ├── static/
-│   └── style.css          # External CSS with glassmorphism design
+│   └── style.css          # External CSS with glassmorphism design, disco elements, and shimmer effects
 └── docs/
     └── CLAUDE_CONTEXT.md  # This file
 ```
@@ -377,7 +377,10 @@ The frontend implements a sophisticated real-time update system that automatical
     <div class="app-container">
         <div class="sidebar">
             <div class="logo">
-                <i class="fas fa-music"></i>
+                <!-- <i class="fas fa-music"></i> -->
+                <div class="logo-container">
+                    <img src="/static/logo.png" alt="Logo" class="logo-image">
+                </div>
                 <h1>Encode Play</h1>
             </div>
             
@@ -483,9 +486,9 @@ The frontend implements a sophisticated real-time update system that automatical
 ### CSS Custom Properties Foundation
 ```css
 :root {
-    /* Spotify-inspired color palette */
-    --spotify-green: #1db954;
-    --spotify-green-light: #1ed760;
+    /* Electric blue color palette */
+    --disco-blue: #00bfff;
+    --disco-blue-light: #1e90ff;
     
     /* Dark theme backgrounds */
     --bg-primary: linear-gradient(135deg, #0c0c0c 0%, #121212 25%, #1a1a1a 50%, #0d1117 100%);
@@ -563,8 +566,8 @@ body {
 
 .input-group input:focus {
     outline: none;
-    border-color: var(--spotify-green);
-    box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.2);
+    border-color: var(--disco-blue);
+    box-shadow: 0 0 0 2px rgba(0, 191, 255, 0.2);
 }
 
 /* Button system */
@@ -582,13 +585,45 @@ body {
 }
 
 .btn-primary {
-    background: linear-gradient(45deg, var(--spotify-green), var(--spotify-green-light));
+    background: linear-gradient(45deg, #2a7a4b, #3a8a5b);
     color: white;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(42, 122, 75, 0.3);
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), rgba(78, 205, 196, 0.1), rgba(69, 183, 209, 0.1), transparent);
+    animation: shimmer 4s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+@keyframes rainbow-text {
+    0%, 100% { 
+        background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 25%, #45b7d1 50%, #00bfff 75%, #6a5acd 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+    }
+    50% { 
+        background: linear-gradient(135deg, #6a5acd 0%, #00bfff 25%, #45b7d1 50%, #4ecdc4 75%, #ff6b6b 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+    }
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(29, 185, 84, 0.3);
+    box-shadow: 0 8px 25px rgba(42, 122, 75, 0.4);
 }
 
 /* Player container */
@@ -615,7 +650,7 @@ body {
 
 /* Queue and Help Dropdown System */
 .queue-badge {
-    background: linear-gradient(45deg, var(--spotify-green), var(--spotify-green-light));
+    background: linear-gradient(45deg, #6b4c93, #4682b4);
     color: white;
     padding: 0.5rem 1rem;
     border-radius: 20px;
@@ -625,10 +660,13 @@ body {
     align-items: center;
     gap: 0.5rem;
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(107, 76, 147, 0.3);
 }
 
 .help-badge {
-    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+    background: linear-gradient(45deg, #cd5c5c, #d2691e);
     color: white;
     padding: 0.5rem 1rem;
     border-radius: 20px;
@@ -638,6 +676,21 @@ body {
     align-items: center;
     gap: 0.5rem;
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(205, 92, 92, 0.3);
+}
+
+.queue-badge::before,
+.help-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), rgba(155, 89, 182, 0.1), rgba(69, 183, 209, 0.1), transparent);
+    animation: shimmer 4s infinite;
 }
 
 .queue-dropdown, .help-dropdown {

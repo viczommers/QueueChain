@@ -23,7 +23,7 @@ QueueChain is a decentralized music streaming platform that combines blockchain 
 - **Blockchain**: Web3.py for Ethereum smart contract interaction
 - **Frontend**: Vanilla JavaScript with modern CSS3 features
 - **Network**: Polygon zkEVM testnet (Cardona)
-- **Design**: Spotify-inspired UI with glassmorphism effects
+- **Design**: Glassmorphism UI with disco-inspired elements, electric blue accents, and shimmer animations
 
 ### Key Features
 - Real-time blockchain queue management
@@ -42,7 +42,7 @@ QueueChain/
 ├── config.py              # Configuration constants (RPC URL, Contract Address)
 ├── contract.abi           # Smart contract ABI definition
 ├── static/
-│   └── style.css          # External CSS styling with glassmorphism design
+│   └── style.css          # External CSS styling with glassmorphism design, disco elements, and shimmer effects
 ├── templates/
 │   └── index.html         # Single-page application frontend
 ├── docs/
@@ -1103,10 +1103,10 @@ async function updateConfigAndRefresh() {
 ```css
 /* CSS Custom Properties (Variables) */
 :root {
-    /* Primary Brand Colors */
-    --spotify-green: #1db954;
-    --spotify-green-light: #1ed760;
-    --spotify-green-dark: #169c46;
+    /* Electric Blue Primary Colors */
+    --disco-blue: #00bfff;
+    --disco-blue-light: #1e90ff;
+    --disco-blue-dark: #0080e6;
     
     /* Background System */
     --bg-primary: linear-gradient(135deg, #0c0c0c 0%, #121212 25%, #1a1a1a 50%, #0d1117 100%);
@@ -1124,7 +1124,7 @@ async function updateConfigAndRefresh() {
     --text-secondary: #b3b3b3;
     --text-muted: #888888;
     --text-error: #ff6b6b;
-    --text-success: #1db954;
+    --text-success: #00bfff;
     --text-warning: #ffd700;
     
     /* Spacing System */
@@ -1146,7 +1146,7 @@ async function updateConfigAndRefresh() {
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
     --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.3);
     --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5);
-    --shadow-glow: 0 8px 25px rgba(29, 185, 84, 0.3);
+    --shadow-glow: 0 8px 25px rgba(0, 191, 255, 0.3);
     
     /* Transitions */
     --transition-fast: 0.15s ease;
@@ -1228,6 +1228,25 @@ body {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+}
+
+/* Animation Keyframes */
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+@keyframes rainbow-text {
+    0%, 100% { 
+        background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 25%, #45b7d1 50%, #00bfff 75%, #6a5acd 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+    }
+    50% { 
+        background: linear-gradient(135deg, #6a5acd 0%, #00bfff 25%, #45b7d1 50%, #4ecdc4 75%, #ff6b6b 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+    }
 }
 ```
 

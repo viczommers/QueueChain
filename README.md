@@ -1,7 +1,7 @@
-⚖️ On-chain Auction Queueing: Dynamic Priority Bidding through Smart Contracts for Real-Time Resource Allocation 
-(to queue up songs, videos, and memes!)
----
-Enocode Music replaces inefficient FIFO (First-in First-out) Playlists with **demand-sensitive bidding**. Users bid ETH to prioritize their content (music), allowing urgent users to express preference intensity through willingness-to-pay. The smart contract maintains an ordered list of URLs indexed by transaction (donation) value, automatically reordering submissions so higher bidders move up the rank.
+# Encode Play
+⚖️ On-chain Auction Queueing: Dynamic Priority Bidding through Smart Contracts for Real-Time Resource Allocation (to queue up songs, videos, and memes!)
+
+Enocode Play replaces inefficient FIFO (First-in First-out) Playlists with **demand-sensitive bidding**. Users bid ETH to prioritize their content (music), allowing urgent users to express preference intensity through willingness-to-pay. The smart contract maintains an ordered list of URLs indexed by transaction (donation) value, automatically reordering submissions so higher bidders move up the rank.
 
 This fixes FIFO's deadweight loss in scarce resource allocation and better captures consumer utilities compared to traditional optimization strategies. The model can be applied to business resource management like **passenger boarding**, **ticket sales** and **patient waiting lists** - anywhere demand-sensitivity improves allocation efficiency.
 

@@ -1,343 +1,563 @@
-# Claude Code Prompt: Generate QueueChain Decentralized Music Platform
+# Claude Code Prompt: Generate QueueChain Static Decentralized Music Platform
 
 ## Project Request
 
-Create a complete decentralized music streaming platform called **QueueChain** that allows users to submit music URLs with ETH bids to create a priority queue. The system should automatically advance the queue every 3 minutes through smart contract interactions.
+Create a complete decentralized music streaming platform called **QueueChain** as a single static HTML file that directly interacts with smart contracts on Polygon zkEVM. Users submit music URLs with ETH bids to create a priority queue that automatically advances every 3 minutes through client-side blockchain interactions.
 
 ## Core Requirements
 
 ### Technology Stack
-- **Backend**: FastAPI (Python 3.8+) with async/await patterns
-- **Blockchain**: Web3.py for Ethereum smart contract interaction on Polygon zkEVM
-- **Frontend**: Single-page application with vanilla JavaScript and modern CSS
+- **Architecture**: Single static HTML file with embedded CSS and JavaScript
+- **Blockchain**: Web3.js for direct Ethereum smart contract interaction
+- **Network**: Polygon zkEVM testnet (Cardona)
 - **Design**: Glassmorphism dark theme with disco-inspired elements, electric blue accents, and shimmer animations
-- **Security**: In-memory private key management (never persist to disk)
+- **Security**: Browser memory-only private key management (never persist)
+- **Deployment**: Static hosting (GitHub Pages, Netlify, Vercel, etc.)
 
 ### Smart Contract Integration
 - **Network**: Polygon zkEVM testnet (Cardona)
 - **RPC URL**: `https://rpc.cardona.zkevm-rpc.com`
 - **Contract Address**: `0x1a7dbe663E5efb9f3aAF2EB56616794069d3F4eA`
-- **Key Functions**: `getCurrentSong()`, `submitData(string)`, `popIfReady()`, `getSubmissionCount()`, `getSubmissionByIndex(uint256)`
+- **Key Functions**: `getCurrentSong()`, `submitData(string)`, `popIfReady()`, `getSubmissionCount()`, `getSubmissionByIndex(uint256)`, `getSubmitterByIndex(uint256)`, `getTimestampByIndex(uint256)`
 
 ### File Structure Required
 ```
 QueueChain/
-├── main.py                 # FastAPI application
-├── config.py              # Configuration constants
-├── contract.abi           # Smart contract ABI
+├── index.html              # Complete static application (all-in-one file)
 ├── static/
-│   └── style.css          # External CSS styling with glassmorphism design, disco elements, and shimmer effects
-└── templates/
-    └── index.html         # Frontend application
+│   └── logo.png            # Logo image (optional)
+└── docs/
+    └── README.md           # Documentation
 ```
 
 ## Detailed Implementation Specifications
 
-### 1. Configuration File (config.py)
-Create a configuration file with:
-```python
-RPC_URL = "https://rpc.cardona.zkevm-rpc.com"
-CONTRACT_ADDRESS = "0x1a7dbe663E5efb9f3aAF2EB56616794069d3F4eA"
+### 1. Complete Static HTML Application (index.html)
+
+Create a single HTML file containing:
+- **Complete CSS styling** embedded in `<style>` tags
+- **Complete JavaScript functionality** embedded in `<script>` tags
+- **External dependencies** via CDN links only
+- **Self-contained** with no server requirements
+
+#### Required CDN Dependencies
+```html
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
 ```
-
-### 2. Smart Contract ABI (contract.abi)
-Create the ABI file with these essential functions:
-- `getCurrentSong()` returns `(string data, uint256 timeRemaining)`
-- `submitData(string _data)` payable function for submitting content
-- `popIfReady()` function to advance queue (3-minute cooldown)
-- `getSubmissionCount()` returns total items
-- `getSubmissionByIndex(uint256 index)` returns submission details
-- `getSubmitterByIndex(uint256 index)` returns submitter address
-- `getTimestampByIndex(uint256 index)` returns submission timestamp
-
-### 3. FastAPI Backend (main.py)
-
-#### Required Dependencies
-```python
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
-from web3 import Web3
-from web3.exceptions import ContractLogicError
-from eth_account import Account
-import threading
-import time
-from config import RPC_URL, CONTRACT_ADDRESS
-```
-
-#### Data Models
-Create Pydantic models:
-- `BidSubmission`: url (str), value (int)
-- `PrivateKeyUpdate`: private_key (str)
-
-#### Critical Private Key Management
-Implement secure private key handling:
-- Global variables: `current_private_key = None`, `current_account = None`
-- `get_account()` function that creates Web3 account from private key
-- Store private keys ONLY in memory, never persist to disk
-- Validate private key format (64 hex characters)
-- Handle account creation errors gracefully
-
-#### Required API Endpoints
-
-**GET /** - Serve HTML template
-**GET /current-url** - Return currently playing content URL from blockchain
-**GET /queue-metadata** - Return comprehensive queue information including:
-- Total submission count
-- Current playing item (index 0)
-- Coming up next (index 1)
-- Recent submissions list (up to 5 items)
-
-**POST /submit-bid** - Submit new content with ETH bid:
-- Validate account exists
-- Build transaction using `contract_instance.functions.submitData(url).build_transaction()`
-- Include bid value, gas settings, and nonce
-- Sign with private key and send raw transaction
-- Wait for confirmation and return transaction hash
-
-**POST /update-private-key** - Store private key and create account:
-- Validate 64 hex character format
-- Create Web3 account immediately for validation
-- Return success with wallet address
-
-**GET /account-info** - Return current wallet connection status
-
-#### Background Services
-Implement two daemon threads:
-
-**Background Pop Task** (every 3 minutes):
-- Check if queue is empty before attempting pop (efficiency optimization)
-- Call `popIfReady()` smart contract function only if queue has items
-- Handle "3 minutes have not passed yet" errors gracefully
-- Use proper transaction signing pattern
-
-#### Blockchain Transaction Pattern
-CRITICAL: Always use this pattern for blockchain writes:
-```python
-# For popIfReady - check queue first to avoid unnecessary transactions
-submission_count = contract_instance.functions.getSubmissionCount().call()
-if submission_count == 0:
-    print("Queue is empty - skipping popIfReady")
-    return
-
-# Standard transaction pattern for all blockchain writes
-transaction = contract_instance.functions.functionName(params).build_transaction({
-    'from': account.address,
-    'value': wei_amount,  # if payable
-    'gas': 200000,
-    'gasPrice': w3.eth.gas_price,
-    'nonce': w3.eth.get_transaction_count(account.address)
-})
-signed_txn = w3.eth.account.sign_transaction(transaction, private_key=current_private_key)
-tx_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
-```
-
-### 4. Frontend Application (templates/index.html)
 
 #### HTML Structure
-Create a complete HTML page with:
-- **Sidebar**: Wallet configuration, URL input, bid value input, submit/refresh buttons
-- **Main Content**: Header with queue dropdown and help dropdown, player container for content display
-- **Queue Info**: Hover-triggered dropdown showing queue statistics, current playing, and recent submissions
-- **Help Info**: Hover-triggered dropdown explaining bidding system and providing tips
-- **Font Awesome icons**: Use CDN link for all icons
-- **External CSS**: Link to `/static/style.css` for styling
-- **Responsive design**: Mobile-first approach with special dropdown positioning
-
-### 5. External CSS Styling (static/style.css)
-Create comprehensive external CSS file with Spotify-inspired design:
-
-**Color Palette**:
-- Primary green: `#1db954` and `#1ed760`
-- Dark backgrounds: Gradients from `#0c0c0c` to `#1a1a1a`
-- Glass effects: `rgba(255, 255, 255, 0.05)` backgrounds
-- Text hierarchy: `#ffffff`, `#b3b3b3`, `#888888`
-
-**Layout System**:
-- Flexbox app container with sidebar (350px) and main content (flex: 1)
-- Glassmorphism cards with `backdrop-filter: blur(10px)`
-- Rounded corners, subtle borders, and shadows
-
-**Component Styles**:
-- **Buttons**: Gradient backgrounds, hover animations with `translateY(-2px)`
-- **Inputs**: Dark backgrounds with green focus states
-- **Player Container**: Large flex container for embedded content
-- **Queue Dropdown**: Hover-triggered dropdown with comprehensive queue info (green gradient badge)
-- **Help Dropdown**: Hover-triggered dropdown with bidding system explanation (red gradient badge)
-
-**Mobile Responsive Design**:
-- Mobile breakpoint at 768px with relative positioning for help/queue elements
-- Centered dropdowns using `transform: translateX(-50%)` with `calc(100vw - 2rem)` width
-- Full-width layout with proper button spacing
-- Maximum dropdown width of 400px to prevent oversized dropdowns
-
-### 6. JavaScript Functionality
-
-**Core Functions**:
-- `updatePrivateKey(privateKey)` - Send private key to backend
-- `loadCurrentSong()` - Fetch and display current content
-- `submitBid()` - Submit new content bid with validation
-- `loadQueueMetadata()` - Update queue dropdown information
-
-**Content Handling with Autoplay**:
-- Convert YouTube URLs to embed format with autoplay and unmuted parameters
-- Handle iframe loading for video content with autoplay permissions
-- Show appropriate loading/error states
-- Enable autoplay for seamless jukebox experience
-
-**Auto-refresh System**:
-- Initialize content loading on page load
-- Set 60-second intervals for automatic updates
-- Manual refresh function for user-triggered updates
-
-**Queue Dropdown Features**:
-- Hover-triggered dropdown with queue statistics
-- Display current playing, coming up next, and recent submissions
-- Format timestamps as relative time ("5m ago", "2h ago")
-- Truncate wallet addresses to readable format
-
-### 7. Security Requirements
-
-#### Private Key Security
-- NEVER persist private keys to disk or databases
-- Store only in memory during session
-- Clear on application restart
-- Validate format before accepting
-- Use password input type in frontend
-
-#### Blockchain Security
-- Always validate Web3 connection before operations
-- Use appropriate gas limits (200,000 for transactions)
-- Handle contract logic errors gracefully
-- Never expose sensitive error information to users
-
-#### Error Handling
-- Wrap all blockchain calls in try-catch blocks
-- Return structured JSON responses with error fields
-- Log errors server-side but show user-friendly messages
-- Handle network timeouts and connection failures
-
-### 8. Specific Implementation Details
-
-#### YouTube URL Handling with Autoplay
-Convert YouTube URLs to embeddable format with autoplay enabled:
-```javascript
-if (url.includes('youtube.com/watch?v=')) {
-    const videoId = url.split('v=')[1].split('&')[0];
-    embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0`;
-} else if (url.includes('youtu.be/')) {
-    const videoId = url.split('youtu.be/')[1].split('?')[0];
-    embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0`;
-}
-container.innerHTML = `<iframe src="${embedUrl}" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
-```
-
-**Important**: Videos start unmuted (`mute=0`) for immediate audio playback in the jukebox experience.
-
-#### Queue Dropdown Animation
-CSS hover animation:
-```css
-.queue-dropdown {
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-}
-.queue-info:hover .queue-dropdown {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-```
-
-#### Help Info Element Structure
-Include help dropdown in the header section:
 ```html
-<div class="help-info" style="position: absolute; top: 0; right: 0; cursor: pointer; margin-top: 50px;">
-    <div class="help-badge">
-        <i class="fas fa-question-circle"></i>
-        How it Works
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encode Play - Decentralized Music Player</title>
+    <!-- CDN links -->
+    <style>
+        /* Complete embedded CSS */
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <!-- Wallet configuration, inputs, buttons -->
+        </div>
+        <div class="main-content">
+            <!-- Header, queue info, help info, player container -->
+        </div>
     </div>
-    <div class="help-dropdown">
-        <div class="dropdown-section">
-            <div class="dropdown-title">
-                <i class="fas fa-coins"></i>
-                Bidding System
+    <script>
+        /* Complete embedded JavaScript */
+    </script>
+</body>
+</html>
+```
+
+### 2. Client-Side Blockchain Integration
+
+#### Web3.js Configuration
+```javascript
+// Blockchain configuration constants
+const RPC_URL = "https://rpc.cardona.zkevm-rpc.com";
+const CONTRACT_ADDRESS = "0x1a7dbe663E5efb9f3aAF2EB56616794069d3F4eA";
+const CONTRACT_ABI = [
+    // Complete ABI array with all required functions
+    {"inputs":[],"name":"getCurrentSong","outputs":[{"internalType":"string","name":"data","type":"string"},{"internalType":"uint256","name":"timeRemaining","type":"uint256"}],"stateMutability":"view","type":"function"},
+    {"inputs":[],"name":"getSubmissionCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+    {"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"getSubmissionByIndex","outputs":[{"internalType":"string","name":"data","type":"string"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"address","name":"submitter","type":"address"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},
+    {"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"getSubmitterByIndex","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+    {"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"getTimestampByIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+    {"inputs":[{"internalType":"string","name":"_data","type":"string"}],"name":"submitData","outputs":[],"stateMutability":"payable","type":"function"},
+    {"inputs":[],"name":"popIfReady","outputs":[],"stateMutability":"nonpayable","type":"function"}
+];
+
+// Global variables
+let web3;
+let contract;
+let currentAccount = null;
+let currentPlayingUrl = null;
+```
+
+#### Blockchain Initialization
+```javascript
+function initBlockchain() {
+    try {
+        web3 = new Web3(RPC_URL);
+        contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+        console.log('Blockchain connection initialized');
+        return true;
+    } catch (error) {
+        console.error('Error initializing blockchain:', error);
+        return false;
+    }
+}
+```
+
+### 3. Critical Private Key Management
+
+**SECURITY REQUIREMENT**: Private keys stored only in browser memory, never persisted.
+
+```javascript
+function setPrivateKey(privateKey) {
+    try {
+        const cleanKey = privateKey.replace('0x', '');
+        if (cleanKey.length !== 64) {
+            throw new Error(`Private key must be 64 hex characters, got ${cleanKey.length} characters`);
+        }
+        
+        currentAccount = web3.eth.accounts.privateKeyToAccount('0x' + cleanKey);
+        console.log('Account created:', currentAccount.address);
+        
+        const addressDisplay = document.getElementById('addressDisplay');
+        addressDisplay.style.display = 'block';
+        addressDisplay.innerHTML = `<i class="fas fa-check-circle"></i> Connected: ${currentAccount.address.slice(0, 6)}...${currentAccount.address.slice(-4)}`;
+        
+        return true;
+    } catch (error) {
+        console.error('Error setting private key:', error);
+        alert('Error: ' + error.message);
+        return false;
+    }
+}
+```
+
+### 4. Core JavaScript Functions
+
+#### Load Current Content
+```javascript
+async function loadCurrentSong() {
+    try {
+        if (!contract) {
+            throw new Error('Blockchain not initialized');
+        }
+
+        const result = await contract.methods.getCurrentSong().call();
+        const url = result[0];
+        
+        const container = document.getElementById('player-container');
+        
+        if (url && url !== '') {
+            let embedUrl = url;
+            if (url.includes('youtube.com/watch?v=')) {
+                const videoId = url.split('v=')[1].split('&')[0];
+                embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0`;
+            } else if (url.includes('youtu.be/')) {
+                const videoId = url.split('youtu.be/')[1].split('?')[0];
+                embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0`;
+            }
+            container.innerHTML = `<iframe src="${embedUrl}" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
+        } else {
+            container.innerHTML = `<div class="status-message no-content"><i class="fas fa-music"></i><br>No content currently playing</div>`;
+        }
+    } catch (error) {
+        console.error('Error loading current song:', error);
+        document.getElementById('player-container').innerHTML = 
+            `<div class="status-message error"><i class="fas fa-wifi"></i><br>Error loading content: ${error.message}</div>`;
+    }
+}
+```
+
+#### Submit Blockchain Bid
+```javascript
+async function submitBid() {
+    const privateKey = document.getElementById('privateKey').value;
+    const bidUrl = document.getElementById('bidUrl').value;
+    const bidValue = document.getElementById('bidValue').value;
+    
+    if (!privateKey || !bidUrl || !bidValue || bidValue <= 0) {
+        alert('Please fill all fields with valid values');
+        return;
+    }
+    
+    try {
+        // Set private key first
+        if (!setPrivateKey(privateKey)) {
+            return;
+        }
+        
+        if (!contract) {
+            throw new Error('Blockchain not initialized');
+        }
+        
+        // Build transaction
+        const gasPrice = await web3.eth.getGasPrice();
+        const nonce = await web3.eth.getTransactionCount(currentAccount.address);
+        
+        const transaction = {
+            from: currentAccount.address,
+            to: CONTRACT_ADDRESS,
+            value: bidValue,
+            gas: 200000,
+            gasPrice: gasPrice,
+            nonce: nonce,
+            data: contract.methods.submitData(bidUrl).encodeABI()
+        };
+        
+        // Sign and send transaction
+        const signedTx = await web3.eth.accounts.signTransaction(transaction, currentAccount.privateKey);
+        const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+        
+        alert(`Bid submitted successfully!\\nTransaction: ${receipt.transactionHash}\\nBlock: ${receipt.blockNumber}`);
+        
+        // Clear form
+        document.getElementById('bidUrl').value = '';
+        document.getElementById('bidValue').value = '';
+        
+        // Refresh content
+        setTimeout(() => {
+            loadCurrentSong();
+            loadQueueMetadata();
+        }, 2000);
+        
+    } catch (error) {
+        console.error('Error submitting bid:', error);
+        alert('Error submitting bid: ' + error.message);
+    }
+}
+```
+
+#### YouTube Title Extraction
+```javascript
+function extractContentTitle(url, element) {
+    if (!url) return 'Unknown Content';
+    
+    // Extract title from YouTube URLs
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        // Set default immediately
+        if (element) element.textContent = 'YouTube Video';
+        
+        // Fetch real title in background
+        setTimeout(async () => {
+            try {
+                const response = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`);
+                const data = await response.json();
+                if (element) element.textContent = data.title || 'YouTube Video';
+            } catch (error) {
+                console.error('Error fetching YouTube title:', error);
+                if (element) element.textContent = 'YouTube Video';
+            }
+        }, 0);
+        
+        return 'YouTube Video';
+    }
+    
+    // Extract domain from other URLs
+    try {
+        const domain = new URL(url).hostname.replace('www.', '');
+        return domain.charAt(0).toUpperCase() + domain.slice(1);
+    } catch {
+        return url.slice(0, 30) + (url.length > 30 ? '...' : '');
+    }
+}
+```
+
+### 5. Real-time Update System
+
+#### Auto-update Implementation
+```javascript
+// Store current URL to detect changes
+let currentPlayingUrl = null;
+
+async function checkForUpdates() {
+    try {
+        if (!contract) return;
+        
+        const result = await contract.methods.getCurrentSong().call();
+        const url = result[0];
+        
+        if (url !== currentPlayingUrl) {
+            console.log('Content changed, refreshing player');
+            currentPlayingUrl = url;
+            loadCurrentSong();
+            loadQueueMetadata();
+        }
+    } catch (error) {
+        console.error('Error checking for updates:', error);
+    }
+}
+
+// Initialize everything when page loads
+window.addEventListener('load', function() {
+    if (initBlockchain()) {
+        loadCurrentSong();
+        loadQueueMetadata();
+        
+        // Check for content changes every 5 seconds
+        setInterval(checkForUpdates, 5000);
+        
+        // Refresh queue metadata every 30 seconds
+        setInterval(loadQueueMetadata, 30000);
+        
+        // Try to advance queue every 3 minutes (if account is set)
+        setInterval(popIfReady, 180000);
+    } else {
+        document.getElementById('player-container').innerHTML = 
+            `<div class="status-message error"><i class="fas fa-exclamation-triangle"></i><br>Failed to initialize blockchain connection</div>`;
+    }
+});
+```
+
+#### Background Queue Advancement
+```javascript
+async function popIfReady() {
+    try {
+        if (!currentAccount || !contract) {
+            console.log('No account available for popIfReady');
+            return;
+        }
+        
+        // Check if queue is empty
+        const submissionCount = await contract.methods.getSubmissionCount().call();
+        if (submissionCount == 0) {
+            console.log('Queue is empty - skipping popIfReady');
+            return;
+        }
+        
+        const gasPrice = await web3.eth.getGasPrice();
+        const nonce = await web3.eth.getTransactionCount(currentAccount.address);
+        
+        const transaction = {
+            from: currentAccount.address,
+            to: CONTRACT_ADDRESS,
+            gas: 200000,
+            gasPrice: gasPrice,
+            nonce: nonce,
+            data: contract.methods.popIfReady().encodeABI()
+        };
+        
+        const signedTx = await web3.eth.accounts.signTransaction(transaction, currentAccount.privateKey);
+        const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+        console.log('popIfReady transaction sent:', receipt.transactionHash);
+        
+    } catch (error) {
+        if (error.message.includes('3 minutes have not passed yet')) {
+            console.log('popIfReady called too early - 3 minutes have not passed yet');
+        } else {
+            console.log('Error calling popIfReady:', error.message);
+        }
+    }
+}
+```
+
+### 6. Embedded CSS Design System
+
+#### Glassmorphism Foundation
+```css
+:root {
+    /* Electric blue color palette */
+    --disco-blue: #00bfff;
+    --disco-blue-light: #1e90ff;
+    
+    /* Dark theme backgrounds */
+    --bg-primary: linear-gradient(135deg, #0c0c0c 0%, #121212 25%, #1a1a1a 50%, #0d1117 100%);
+    --bg-sidebar: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+    
+    /* Glassmorphism effects */
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    
+    /* Text hierarchy */
+    --text-primary: #ffffff;
+    --text-secondary: #b3b3b3;
+    --text-muted: #888;
+}
+
+/* Global reset and foundation */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+```
+
+#### Loading Animation
+```css
+.loading i {
+    font-size: 3rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+```
+
+#### Shimmer Effects
+```css
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), rgba(78, 205, 196, 0.1), rgba(69, 183, 209, 0.1), transparent);
+    animation: shimmer 4s infinite;
+}
+```
+
+### 7. UI Components Required
+
+#### Sidebar Structure
+```html
+<div class="sidebar">
+    <div class="logo">
+        <div class="logo-container">
+            <img src="static/logo.png" alt="Logo" class="logo-image">
+        </div>
+        <h1>Encode Play</h1>
+    </div>
+    
+    <div class="wallet-section">
+        <div class="wallet-title">
+            <i class="fas fa-wallet"></i>
+            Wallet Configuration
+        </div>
+        
+        <div class="input-group">
+            <label for="privateKey">
+                <i class="fas fa-key"></i> Private Key
+            </label>
+            <input type="password" id="privateKey" placeholder="Enter your private key">
+        </div>
+
+        <div class="input-group">
+            <label for="bidUrl">
+                <i class="fas fa-link"></i> Content URL (max 42 chars)
+            </label>
+            <input type="text" id="bidUrl" placeholder="https://youtu.be/content">
+        </div>
+
+        <div class="input-group">
+            <label for="bidValue">
+                <i class="fas fa-coins"></i> Bid Value (Wei)
+            </label>
+            <input type="number" id="bidValue" placeholder="1000000000000000000" min="0">
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="submitBid()">
+                <i class="fas fa-play"></i>
+                Submit Bid
+            </button>
+            <button class="btn btn-secondary" onclick="refreshContent()">
+                <i class="fas fa-sync"></i>
+                Refresh
+            </button>
+        </div>
+        
+        <div class="button-group" style="margin-top: 1rem;">
+            <button class="btn btn-secondary" onclick="testConnection()">
+                <i class="fas fa-heart-pulse"></i>
+                Test Connection
+            </button>
+        </div>
+
+        <div id="addressDisplay" class="account-display" style="display: none;"></div>
+    </div>
+</div>
+```
+
+#### Main Content Structure
+```html
+<div class="main-content">
+    <div class="header">
+        <h2>Now Playing</h2>
+        <p>Decentralized music streaming powered by <a href="https://cardona-zkevm.polygonscan.com/address/0x1a7dbe663e5efb9f3aaf2eb56616794069d3f4ea" target="_blank" class="header-link">Polygon zkEVM Smart Contract</a></p>
+        
+        <div class="queue-info" id="queueInfo">
+            <div class="queue-badge">
+                <i class="fas fa-list"></i>
+                <span id="queueCount">0</span> in queue
             </div>
-            <div style="color: #b3b3b3; font-size: 0.9rem; line-height: 1.5;">
-                <p><strong>Higher bids = Higher priority!</strong></p>
-                <p>• Submit your content URL with an ETH bid</p>
-                <p>• The more you bid, the higher you rank in the queue</p>
-                <p>• Queue automatically advances every 3 minutes</p>
-                <p>• Your content plays when it reaches the top</p>
+            
+            <div class="queue-dropdown" id="queueDropdown">
+                <!-- Queue dropdown content -->
             </div>
         </div>
-        <div class="dropdown-section">
-            <div class="dropdown-title">
-                <i class="fas fa-lightbulb"></i>
-                Tips
+        
+        <div class="help-info" style="position: absolute; top: 0; right: 0; cursor: pointer; margin-top: 50px;">
+            <div class="help-badge">
+                <i class="fas fa-question-circle"></i>
+                How it Works
             </div>
-            <div style="color: #b3b3b3; font-size: 0.9rem; line-height: 1.5;">
-                <p>• Use YouTube URLs for best experience</p>
-                <p>• Bid in Wei (1 ETH = 10^18 Wei)</p>
-                <p>• Check queue stats to see competition</p>
-                <p>• Get testnet ETH from the faucet</p>
+            <div class="help-dropdown">
+                <!-- Help dropdown content -->
             </div>
+        </div>
+    </div>
+    
+    <div class="player-container" id="player-container">
+        <div class="loading">
+            <i class="fas fa-spinner"></i>
+            <div>Loading current content...</div>
         </div>
     </div>
 </div>
 ```
 
-#### Help Badge CSS Styling
-```css
-.help-badge {
-    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.3s ease;
-}
+### 8. Mobile Responsive Design
 
-.help-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    margin-top: 0.5rem;
-    width: 350px;
-    background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(15, 15, 15, 0.95) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(20px);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-    z-index: 1000;
-}
-
-.help-info:hover .help-dropdown {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-```
-
-#### Responsive Design
-Mobile breakpoint at 768px:
-- Stack sidebar above main content
-- Full-width inputs and buttons
-- Special dropdown positioning for mobile:
+#### Mobile Breakpoint (768px)
 ```css
 @media (max-width: 768px) {
+    .app-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .main-content {
+        padding: 1rem;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+    
     .help-info, .queue-info {
         position: relative !important;
         top: auto !important;
@@ -363,60 +583,96 @@ Mobile breakpoint at 768px:
 }
 ```
 
-#### Static File Serving
-Mount static files in FastAPI application:
-```python
-from fastapi.staticfiles import StaticFiles
+### 9. Security Requirements
 
-app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
+#### Client-Side Security
+- **Private keys stored only in browser memory**
+- **Never persisted to localStorage or disk**
+- **Cleared on page refresh/close**
+- **Validated before use (64 hex characters)**
+- **No server-side storage or transmission**
+
+#### Blockchain Security
+- **Direct smart contract interaction only**
+- **Proper transaction building patterns**
+- **Gas limit management (200,000 for transactions)**
+- **Error handling for contract calls**
+- **Input validation before blockchain operations**
+
+### 10. Testing and Connection Functions
+
+#### Connection Testing
+```javascript
+async function testConnection() {
+    try {
+        const isConnected = await web3.eth.net.isListening();
+        const blockNumber = await web3.eth.getBlockNumber();
+        
+        alert(`Connection Test:\\n\\nBlockchain: ${isConnected ? 'Connected' : 'Disconnected'}\\nLatest Block: ${blockNumber}\\nContract: ${CONTRACT_ADDRESS}`);
+        
+        // Also test contract calls
+        loadCurrentSong();
+        loadQueueMetadata();
+        
+    } catch (error) {
+        console.error('Connection test failed:', error);
+        alert(`Connection test failed: ${error.message}`);
+    }
+}
 ```
-
-### 9. Server Configuration
-- Run on host `0.0.0.0`, port `8000`
-- Use Uvicorn ASGI server
-- Single worker for state consistency
-- Daemon threads for background services
 
 ## Expected Deliverables
 
-1. **main.py** - Complete FastAPI backend with all endpoints and background services
-2. **config.py** - Configuration constants
-3. **contract.abi** - Smart contract ABI definition
-4. **static/style.css** - External CSS styling with glassmorphism design
-5. **templates/index.html** - Complete frontend application with JavaScript functionality
-6. Working application that can:
-   - Connect to Polygon zkEVM blockchain
-   - Handle private key management securely
-   - Submit content bids with ETH
-   - Display current playing content
-   - Show live queue information
+1. **index.html** - Complete static application containing:
+   - Embedded CSS with glassmorphism design system
+   - Embedded JavaScript with full Web3 functionality
+   - Complete UI with sidebar, main content, dropdowns
+   - Real-time updates and auto-refresh
+   - Mobile responsive design
+   - YouTube title extraction
+   - Loading animations and error handling
+
+2. **static/logo.png** - Optional logo image
+
+3. Working application that can:
+   - Connect directly to Polygon zkEVM blockchain
+   - Handle private key management securely in browser memory
+   - Submit content bids with ETH via Web3.js
+   - Display current playing content with autoplay
+   - Show live queue information with real YouTube titles
    - Auto-advance queue every 3 minutes
+   - Work on any static hosting platform
 
 ## Testing Checklist
 
 After implementation, verify:
-- [ ] Server starts successfully on port 8000
-- [ ] Homepage loads with proper styling
+- [ ] Single HTML file opens in browser without server
+- [ ] Styling loads correctly with glassmorphism design
 - [ ] Private key validation works (64 hex chars)
-- [ ] Blockchain connection established
+- [ ] Blockchain connection established via Web3.js
 - [ ] Queue metadata loads from smart contract
-- [ ] Bid submission creates transactions
-- [ ] Background services start automatically
+- [ ] Bid submission creates transactions successfully
+- [ ] Auto-update intervals work (5s content, 30s metadata, 3m queue advance)
 - [ ] YouTube URLs convert to embeds with autoplay (unmuted)
-- [ ] Responsive design works on mobile
+- [ ] YouTube titles fetch and display correctly
+- [ ] Responsive design works on mobile devices
 - [ ] Error handling prevents crashes
+- [ ] Loading spinner animates correctly
+- [ ] All dropdowns work on hover
+- [ ] Test connection button works
 
 ## Success Criteria
 
-The application should be a fully functional decentralized music platform where:
-1. Users can connect their Ethereum wallets via private key
-2. Users can submit music content URLs with ETH bids
-3. Content is displayed in an embedded player with autoplay
-4. Queue automatically advances every 3 minutes
-5. Real-time queue information is displayed
+The application should be a fully functional static decentralized application where:
+1. Users can connect Ethereum wallets via private key (browser memory only)
+2. Users can submit music content URLs with ETH bids directly to blockchain
+3. Content displays in embedded player with autoplay functionality
+4. Queue automatically advances every 3 minutes via client-side calls
+5. Real-time queue information displays with YouTube title fetching
 6. Modern, responsive UI provides excellent user experience
-7. All blockchain interactions work correctly
-8. Security best practices are followed
+7. All blockchain interactions work correctly via Web3.js
+8. Security best practices followed (no private key persistence)
+9. Can be deployed to any static hosting platform
+10. Works entirely client-side with no backend dependencies
 
-Generate all required files with complete implementations following these specifications exactly. The result should be a production-ready decentralized application.
+Generate the complete static HTML file with all functionality embedded. The result should be a production-ready decentralized application that can be hosted anywhere static files are served.
